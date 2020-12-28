@@ -1,2 +1,2 @@
 # multisearch
-Multisite search and availability checker for Allegro, OLX and others
+Mobile Android app - Multisite search and availability checker for Allegro, OLX and others
