@@ -42,7 +42,7 @@ class AllegroApiServiceImpl : ApiService {
                     override fun onResponse(response: JSONObject?) {
                         if (response !== null) {
                             prefs.allegroApiToken = response.get("access_token").toString()
-                            var expire:Long = response.getInt("expires_in")
+                            var expire:Long = response.getLong("expires_in")
                             expire += TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis())
                             prefs.allegroApiTokenExpire = expire
                         }
@@ -54,7 +54,6 @@ class AllegroApiServiceImpl : ApiService {
                     }
                 }
             )
-        val nowyToken:String = res.toString()
 
     }
 
