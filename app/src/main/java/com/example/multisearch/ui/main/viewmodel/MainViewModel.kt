@@ -1,74 +1,110 @@
 package com.example.multisearch.ui.main.viewmodel
 
-import androidx.lifecycle.LiveData
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.multisearch.data.model.User
-import com.example.multisearch.data.repository.MainRepository
-import com.example.multisearch.utils.Resource
+import com.example.multisearch.data.model.Offer
+import com.example.multisearch.data.model.OffersDataBase
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
-class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
+class MainViewModel() : ViewModel() {
 
-//    private val offers = MutableLiveData<Resource<List<Offer>>>()
-//    private val compositeDisposable = CompositeDisposable()
-//
-//    init {
-//        fetchOffers()
-//    }
-//
-//    private fun fetchOffers() {
-//        offers.postValue(Resource.loading(null))
-//        compositeDisposable.add(
-//            mainRepository.getOffers("Samsung")
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe({ offerList ->
-//                    offers.postValue(Resource.success(offerList))
-//                }, { throwable ->
-//                    offers.postValue(Resource.error("Something Went Wrong", null))
-//                })
-//        )
-//    }
-//
-//    override fun onCleared() {
-//        super.onCleared()
-//        compositeDisposable.dispose()
-//    }
-//
-//    fun getOffers(): LiveData<Resource<List<Offer>>> {
-//        return offers
-//    }
+    protected val compositeDisposable = CompositeDisposable()
 
-    private val users = MutableLiveData<Resource<List<User>>>()
-    private val compositeDisposable = CompositeDisposable()
+    private var dataBaseInstance: OffersDataBase ?= null
 
-    init {
-        fetchUsers()
+    var offersList = MutableLiveData<List<Offer>>()
+
+    fun setInstanceOfDb(dataBaseInstance: OffersDataBase) {
+        this.dataBaseInstance = dataBaseInstance
     }
 
-    private fun fetchUsers() {
-        users.postValue(Resource.loading(null))
-        compositeDisposable.add(
-            mainRepository.getUsers()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ userList ->
-                    users.postValue(Resource.success(userList))
-                }, { throwable ->
-                    users.postValue(Resource.error("Something Went Wrong", null))
-                })
-        )
+    fun saveDataIntoDb(data: Offer){
+
+        dataBaseInstance?.OfferDao()?.insertOffer(data)
+            ?.subscribeOn(Schedulers.io())
+            ?.observeOn(AndroidSchedulers.mainThread())
+            ?.subscribe ({
+            },{
+
+            })?.let {
+                compositeDisposable.add(it)
+            }
+    }
+
+    fun saveDatasIntoDb(data: List<Offer>){
+
+        dataBaseInstance?.OfferDao()?.insertOfferList(data)
+            ?.subscribeOn(Schedulers.io())
+            ?.observeOn(AndroidSchedulers.mainThread())
+            ?.subscribe ({
+            },{
+
+            })?.let {
+                compositeDisposable.add(it)
+            }
+    }
+
+    fun getOffer(){
+
+        dataBaseInstance?.OfferDao()?.getAllOffers()
+            ?.subscribeOn(Schedulers.io())
+            ?.observeOn(AndroidSchedulers.mainThread())
+            ?.subscribe ({
+                if(!it.isNullOrEmpty()){
+                    offersList.postValue(it)
+                }else{
+                    offersList.postValue(listOf())
+                }
+                it?.forEach {
+                    Log.v("Offer Name",it.name)
+                }
+            },{
+            })?.let {
+                compositeDisposable.add(it)
+            }
+    }
+
+    fun getSearchOffers(searchId: String){
+
+        dataBaseInstance?.OfferDao()?.getOfferBySearch(searchId)
+            ?.subscribeOn(Schedulers.io())
+            ?.observeOn(AndroidSchedulers.mainThread())
+            ?.subscribe ({
+                if(!it.isNullOrEmpty()){
+                    offersList.postValue(it)
+                }else{
+                    offersList.postValue(listOf())
+                }
+                it?.forEach {
+                    Log.v("Offer Name",it.name)
+                }
+            },{
+            })?.let {
+                compositeDisposable.add(it)
+            }
     }
 
     override fun onCleared() {
-        super.onCleared()
         compositeDisposable.dispose()
+        compositeDisposable.clear()
+        super.onCleared()
     }
 
-    fun getUsers(): LiveData<Resource<List<User>>> {
-        return users
+    fun deleteOffer(offer: Offer) {
+        dataBaseInstance?.OfferDao()?.deleteOffer(offer)
+            ?.subscribeOn(Schedulers.io())
+            ?.observeOn(AndroidSchedulers.mainThread())
+            ?.subscribe ({
+                //Refresh Page data
+                getOffer()
+            },{
+
+            })?.let {
+                compositeDisposable.add(it)
+            }
     }
+
 }

@@ -1,25 +1,20 @@
 package com.example.multisearch.data.api
 
-import com.example.multisearch.data.model.Offer
-import com.example.multisearch.data.model.User
-import com.rx2androidnetworking.Rx2AndroidNetworking
-import io.reactivex.Single
+import android.content.Context
 
 class OlxApiServiceImpl: ApiService {
-    override fun getOffers(phrase: String): Single<List<Offer>> {
-//        val request: ANRequest<> =  AndroidNetworking.get(olx.address)
-//            .addPathParameter("q-"+phrase)
-//            .build();
-//        ANResponse
-        return Rx2AndroidNetworking.get("https://5e510330f2c0d300147c034c.mockapi.io/users")
-            .build()
-            .getObjectListSingle(Offer::class.java)
+
+    private val searchUrl: String = "https://www.olx.pl/oferty/q-"
+    private val site:String = "OLX"
+    private val prodUrl: String = "https://www.olx.pl/oferta/"
+    private val icon: String = "olx_icon.jpg"
+
+    override fun getOffers(phrase: String) {
+//TODO
 
     }
 
-    override fun getUsers(): Single<List<User>> {
-        return Rx2AndroidNetworking.get("https://5e510330f2c0d300147c034c.mockapi.io/users")
-            .build()
-            .getObjectListSingle(User::class.java)
+    override suspend fun getToken(context: Context) {
+        //nothing to work
     }
 }
