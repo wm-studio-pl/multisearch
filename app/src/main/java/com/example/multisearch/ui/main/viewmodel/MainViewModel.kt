@@ -8,6 +8,10 @@ import com.example.multisearch.data.model.OffersDataBase
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class MainViewModel() : ViewModel() {
 
@@ -36,15 +40,20 @@ class MainViewModel() : ViewModel() {
 
     fun saveDatasIntoDb(data: List<Offer>){
 
-        dataBaseInstance?.OfferDao()?.insertOfferList(data)
-            ?.subscribeOn(Schedulers.io())
-            ?.observeOn(AndroidSchedulers.mainThread())
-            ?.subscribe ({
-            },{
-
-            })?.let {
-                compositeDisposable.add(it)
+        GlobalScope.launch {
+            CoroutineScope(Dispatchers.IO).launch {
+                dataBaseInstance?.OfferDao()?.deleteAll()
+                dataBaseInstance?.OfferDao()?.insertOfferList(data)
+                    ?.subscribeOn(Schedulers.io())
+                    ?.observeOn(AndroidSchedulers.mainThread())
+                    ?.subscribe({
+                    }, {
+                        getOffer()
+                    })?.let {
+                        compositeDisposable.add(it)
+                    }
             }
+        }
     }
 
     fun getOffer(){
@@ -59,7 +68,7 @@ class MainViewModel() : ViewModel() {
                     offersList.postValue(listOf())
                 }
                 it?.forEach {
-                    Log.v("Offer Name",it.name)
+                    Log.v("Offer Name",it.name.toString())
                 }
             },{
             })?.let {

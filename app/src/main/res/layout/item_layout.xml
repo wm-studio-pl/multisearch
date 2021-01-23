@@ -6,12 +6,17 @@
     android:layout_width="match_parent"
     android:layout_height="60dp">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        android:orientation="vertical">
     <ImageView
         android:id="@+id/imageViewIcon"
         android:layout_width="80dp"
-        android:layout_height="0dp"
+        android:layout_height="80dp"
         android:padding="4dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -29,7 +34,20 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="" />
 
-    <ImageView
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/textViewPrice"
+            android:layout_width="259dp"
+            android:layout_height="28dp"
+            android:textAlignment="textEnd"
+            style="@style/TextAppearance.AppCompat.Large"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/textViewOfferName"
+            app:layout_constraintTop_toBottomOf="@+id/textViewOfferName"
+            tools:text="-, PLN"
+            android:gravity="end" />
+
+        <ImageView
         android:id="@+id/imageViewSite"
         android:layout_width="44dp"
         android:layout_height="58dp"
@@ -42,18 +60,12 @@
         app:layout_constraintStart_toStartOf="@+id/textViewOfferName"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0" />
+        <ListView
+            android:id="@+id/offerList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/textViewPrice"
-        android:layout_width="259dp"
-        android:layout_height="28dp"
-        android:textAlignment="textEnd"
-        style="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/textViewOfferName"
-        app:layout_constraintTop_toBottomOf="@+id/textViewOfferName"
-        tools:text="-, PLN"
-        android:gravity="end" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

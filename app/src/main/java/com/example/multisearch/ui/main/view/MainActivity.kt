@@ -1,6 +1,7 @@
 package com.example.multisearch.ui.main.view
 
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -23,31 +24,31 @@ class MainActivity : AppCompatActivity() {
 
     private var mainViewModel: MainViewModel ?= null
     private var adapter: MainAdapter ?= null
-    private var apis = ArrayList<ApiService>()
+    private lateinit var allegroApi:ApiService
+    private lateinit var olxApi:ApiService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+            setupViewModel()
             var dataBaseInstance = OffersDataBase.getDatabasenIstance(this)
             mainViewModel?.setInstanceOfDb(dataBaseInstance)
             setContentView(R.layout.activity_main)
+            allegroApi = AllegroApiServiceImpl(mainViewModel)
+            olxApi = OlxApiServiceImpl(mainViewModel)
             setupAPIS()
-            setupViewModel()
             setupUI()
             setupObserver()
+            setListeners()
     }
 
     private fun setupAPIS() {
-        apis.add(AllegroApiServiceImpl(mainViewModel))
-        apis.add(OlxApiServiceImpl())
-        val ileApi = 2
         search_button.isEnabled = false
          GlobalScope.launch(Dispatchers.Main) {
              prefs.allegroApiToken = ""
-             for (i in 0 until ileApi) {
-                 val token = withContext(Dispatchers.IO) { apis.get(i).getToken(applicationContext) }
-                 delay(2000)
-             }
+             allegroApi.getToken(applicationContext)
+             delay(200)
              search_button.isEnabled = true
+             progressBar.visibility = View.INVISIBLE
          }
     }
 
@@ -122,12 +123,12 @@ class MainActivity : AppCompatActivity() {
             search_button.isEnabled = false
             val searchPhrase:String = search_input.text.toString()
             withContext(Dispatchers.IO) {
-                for (i in 0 until ileApi) {
-                    apis.get(i).getOffers(searchPhrase)
-                }
+                allegroApi.getOffers(searchPhrase)
+                olxApi.getOffers(searchPhrase)
             }
-            search_button.isEnabled = false
+            search_button.isEnabled = true
         }
+        //var intent: Intent = Intent(applicationContext, item)
     }
 
     /*private fun renderList(users: List<User>) {

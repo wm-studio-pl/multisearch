@@ -1,8 +1,9 @@
 package com.example.multisearch.data.api
 
 import android.content.Context
+import com.example.multisearch.ui.main.viewmodel.MainViewModel
 
-class OlxApiServiceImpl: ApiService {
+class OlxApiServiceImpl (val viewModel: MainViewModel?): ApiService {
 
     private val searchUrl: String = "https://www.olx.pl/oferty/q-"
     private val site:String = "OLX"
